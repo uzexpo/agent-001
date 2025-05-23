@@ -5,7 +5,11 @@ import os
 import sys
 import json
 from typing import List, Tuple, Type, Dict
-import torch
+
+try:
+    import torch
+except ImportError:  # allow running without torch installed
+    torch = None
 from transformers import AutoTokenizer, AutoModelForSeq2SeqLM
 
 from sources.utility import timer_decorator, pretty_print, animate_thinking
@@ -186,12 +190,12 @@ class Memory():
         return self.memory
 
     def get_cuda_device(self) -> str:
-        if torch.backends.mps.is_available():
-            return "mps"
-        elif torch.cuda.is_available():
-            return "cuda"
-        else:
-            return "cpu"
+        if torch is not None:
+            if hasattr(torch, "backends") and hasattr(torch.backends, "mps") and torch.backends.mps.is_available():
+                return "mps"
+            if torch.cuda.is_available():
+                return "cuda"
+        return "cpu"
 
     def summarize(self, text: str, min_length: int = 64) -> str:
         """
@@ -219,7 +223,7 @@ class Memory():
             early_stopping=True
         )
         summary = self.tokenizer.decode(summary_ids[0], skip_special_tokens=True)
-        summary.replace('summary:', '')
+        summary = summary.replace('summary:', '')
         self.logger.info(f"Memory summarized from len {len(text)} to {len(summary)}.")
         self.logger.info(f"Summarized text:\n{summary}")
         return summary

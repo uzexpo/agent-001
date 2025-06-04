@@ -7,7 +7,16 @@ import asyncio
 
 from sources.llm_provider import Provider
 from sources.interaction import Interaction
-from sources.agents import Agent, CoderAgent, CasualAgent, FileAgent, PlannerAgent, BrowserAgent, McpAgent
+from sources.agents import (
+    Agent,
+    CoderAgent,
+    CasualAgent,
+    FileAgent,
+    PlannerAgent,
+    BrowserAgent,
+    McpAgent,
+    TradingAgent,
+)
 from sources.browser import Browser, create_driver
 from sources.utility import pretty_print
 
@@ -34,21 +43,44 @@ async def main():
     )
 
     agents = [
-        CasualAgent(name=config["MAIN"]["agent_name"],
-                    prompt_path=f"prompts/{personality_folder}/casual_agent.txt",
-                    provider=provider, verbose=False),
-        CoderAgent(name="coder",
-                   prompt_path=f"prompts/{personality_folder}/coder_agent.txt",
-                   provider=provider, verbose=False),
-        FileAgent(name="File Agent",
-                  prompt_path=f"prompts/{personality_folder}/file_agent.txt",
-                  provider=provider, verbose=False),
-        BrowserAgent(name="Browser",
-                     prompt_path=f"prompts/{personality_folder}/browser_agent.txt",
-                     provider=provider, verbose=False, browser=browser),
-        PlannerAgent(name="Planner",
-                     prompt_path=f"prompts/{personality_folder}/planner_agent.txt",
-                     provider=provider, verbose=False, browser=browser),
+        CasualAgent(
+            name=config["MAIN"]["agent_name"],
+            prompt_path=f"prompts/{personality_folder}/casual_agent.txt",
+            provider=provider,
+            verbose=False,
+        ),
+        CoderAgent(
+            name="coder",
+            prompt_path=f"prompts/{personality_folder}/coder_agent.txt",
+            provider=provider,
+            verbose=False,
+        ),
+        FileAgent(
+            name="File Agent",
+            prompt_path=f"prompts/{personality_folder}/file_agent.txt",
+            provider=provider,
+            verbose=False,
+        ),
+        BrowserAgent(
+            name="Browser",
+            prompt_path=f"prompts/{personality_folder}/browser_agent.txt",
+            provider=provider,
+            verbose=False,
+            browser=browser,
+        ),
+        PlannerAgent(
+            name="Planner",
+            prompt_path=f"prompts/{personality_folder}/planner_agent.txt",
+            provider=provider,
+            verbose=False,
+            browser=browser,
+        ),
+        TradingAgent(
+            name="CoBax T",
+            prompt_path=f"prompts/{personality_folder}/trading_agent.txt",
+            provider=provider,
+            verbose=False,
+        ),
         #McpAgent(name="MCP Agent",
         #            prompt_path=f"prompts/{personality_folder}/mcp_agent.txt",
         #            provider=provider, verbose=False), # NOTE under development

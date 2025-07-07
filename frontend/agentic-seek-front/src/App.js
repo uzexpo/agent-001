@@ -3,6 +3,79 @@ import axios from 'axios';
 import './App.css';
 import { colors } from './colors';
 
+// Новый компонент страницы Agent AI
+function AgentAIPage() {
+  return (
+    <div className="agent-ai-page">
+      <header className="agent-ai-header">
+        <div className="zerro-logo-title">
+          <span className="zerro-logo">⚡Z</span>
+          <span className="zerro-title">Zerro</span>
+        </div>
+        <h2 className="agent-ai-subtitle">Возможности AI-агентов</h2>
+        <p className="agent-ai-desc">Всё, что нужно для создания мощного AI-ассистента для вашего бизнеса и жизни.</p>
+      </header>
+      <section className="agent-ai-features">
+        <div className="feature-card">
+          <span className="feature-icon">⚙️</span>
+          <h3>Гибкая настройка</h3>
+          <p>Настройте инструкции и поведение агентов под ваши задачи и стиль.</p>
+        </div>
+        <div className="feature-card">
+          <span className="feature-icon">💬</span>
+          <h3>Интеграция с Telegram</h3>
+          <p>Лёгкое подключение к Telegram и другим мессенджерам.</p>
+        </div>
+        <div className="feature-card">
+          <span className="feature-icon">📊</span>
+          <h3>Продвинутая аналитика</h3>
+          <p>Анализируйте диалоги, отслеживайте эффективность агентов.</p>
+        </div>
+        <div className="feature-card">
+          <span className="feature-icon">⚡</span>
+          <h3>Поддержка моделей OpenAI</h3>
+          <p>Используйте GPT-3.5/4 и другие LLM для естественных ответов.</p>
+        </div>
+        <div className="feature-card">
+          <span className="feature-icon">🧪</span>
+          <h3>Эмулятор для тестирования</h3>
+          <p>Тестируйте агентов в удобном эмуляторе перед запуском.</p>
+        </div>
+        <div className="feature-card">
+          <span className="feature-icon">🔒</span>
+          <h3>Безопасность и надёжность</h3>
+          <p>Ваши данные и ключи API защищены.</p>
+        </div>
+      </section>
+      <section className="agent-ai-faq">
+        <h2>Часто задаваемые вопросы</h2>
+        <div className="faq-list">
+          <details>
+            <summary>Как начать использовать Zerro?</summary>
+            <p>Зарегистрируйтесь, настройте агентов и интеграции — и начните автоматизировать задачи!</p>
+          </details>
+          <details>
+            <summary>Нужны ли навыки программирования?</summary>
+            <p>Нет, всё настраивается через удобный интерфейс.</p>
+          </details>
+          <details>
+            <summary>Можно ли интегрировать агентов в другие платформы?</summary>
+            <p>Да, доступны интеграции с Telegram, Google, облачными сервисами и API.</p>
+          </details>
+          <details>
+            <summary>Какие модели ИИ поддерживаются?</summary>
+            <p>GPT-3.5, GPT-4, локальные LLM и другие.</p>
+          </details>
+          <details>
+            <summary>Есть ли ограничения в бесплатном плане?</summary>
+            <p>Бесплатный план — для знакомства и личных задач, есть лимиты на количество агентов и сообщений.</p>
+          </details>
+        </div>
+      </section>
+    </div>
+  );
+}
+
 function App() {
     const [query, setQuery] = useState('');
     const [messages, setMessages] = useState([]);
@@ -167,12 +240,17 @@ function App() {
     return (
         <div className="app">
             <header className="header">
-                <h1>AgenticSeek</h1>
+                <h1 onClick={() => setCurrentView('blocks')}>AgenticSeek</h1>
+                <nav>
+                  <button onClick={() => setCurrentView('agent-ai')}>Agent AI</button>
+                  {/* другие кнопки меню */}
+                </nav>
             </header>
             <main className="main">
-                <div className="app-sections">
-
-
+                {currentView === 'agent-ai' ? (
+                  <AgentAIPage />
+                ) : (
+                  <div className="app-sections">
                     <div className="chat-section">
                         <h2>Chat Interface</h2>
                         <div className="messages">
@@ -268,7 +346,8 @@ function App() {
                             )}
                         </div>
                     </div>
-                </div>
+                  </div>
+                )}
             </main>
         </div>
     );

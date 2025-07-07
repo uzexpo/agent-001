@@ -2,17 +2,17 @@
 
 import os, sys
 import uvicorn
-import aiofiles
 import configparser
 import asyncio
 import time
 from typing import List
-from fastapi import FastAPI
+from fastapi import FastAPI, Body
 from fastapi.responses import JSONResponse
 from fastapi.responses import FileResponse
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 import uuid
+from pydantic import BaseModel
 
 from sources.llm_provider import Provider
 from sources.interaction import Interaction
@@ -105,6 +105,41 @@ def initialize_system():
 interaction = initialize_system()
 is_generating = False
 query_resp_history = []
+
+# --- Модели для новых функций ---
+class SessionHistoryItem(BaseModel):
+    timestamp: float
+    user_query: str
+    agent_answer: str
+    agent_name: str
+    success: bool
+
+class UserProfile(BaseModel):
+    username: str
+    email: str = ""
+    language: str = "ru"
+    avatar_url: str = ""
+
+class IntegrationKeys(BaseModel):
+    google_drive: str = ""
+    gmail: str = ""
+    google_calendar: str = ""
+    telegram: str = ""
+    dropbox: str = ""
+    onedrive: str = ""
+    ocr: str = ""
+    git: str = ""
+
+class Feedback(BaseModel):
+    message: str
+    rating: int = 5
+    user: str = ""
+
+# --- In-memory хранилища для MVP ---
+session_history: list = []
+user_profile = UserProfile(username="demo_user")
+integration_keys = IntegrationKeys()
+feedback_list: list = []
 
 @api.get("/screenshot")
 async def get_screenshot():
@@ -233,6 +268,53 @@ async def process_query(request: QueryRequest):
         logger.info("Processing finished")
         if config.getboolean('MAIN', 'save_session'):
             interaction.save_session()
+
+@api.get("/session/history")
+async def get_session_history():
+    """Получить историю сессий пользователя."""
+    return session_history
+
+@api.post("/session/history")
+async def add_session_history(item: SessionHistoryItem):
+    """Добавить запись в историю сессий."""
+    session_history.append(item.dict())
+    return {"status": "ok"}
+
+@api.post("/session/history/clear")
+async def clear_session_history():
+    """Очистить историю сессий."""
+    session_history.clear()
+    return {"status": "cleared"}
+
+@api.get("/profile")
+async def get_profile():
+    """Получить профиль пользователя."""
+    return user_profile.dict()
+
+@api.post("/profile/update")
+async def update_profile(profile: UserProfile):
+    """Обновить профиль пользователя."""
+    global user_profile
+    user_profile = profile
+    return {"status": "updated"}
+
+@api.get("/integrations")
+async def get_integrations():
+    """Получить текущие ключи интеграций."""
+    return integration_keys.dict()
+
+@api.post("/integrations/update")
+async def update_integrations(keys: IntegrationKeys):
+    """Обновить ключи интеграций."""
+    global integration_keys
+    integration_keys = keys
+    return {"status": "updated"}
+
+@api.post("/feedback")
+async def send_feedback(feedback: Feedback):
+    """Оставить обратную связь."""
+    feedback_list.append(feedback.dict())
+    return {"status": "received"}
 
 if __name__ == "__main__":
     uvicorn.run(api, host="0.0.0.0", port=8000)

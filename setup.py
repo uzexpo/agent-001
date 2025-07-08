@@ -33,7 +33,7 @@ setup(
         "torch>=2.4.1",
         "ollama>=0.4.7",
         "scipy>=1.9.3",
-        "kokoro>=0.7.12",
+        "pyttsx3>=2.90",
         "protobuf>=3.20.3",
         "termcolor>=2.5.0",
         "ipython>=8.34.0",
